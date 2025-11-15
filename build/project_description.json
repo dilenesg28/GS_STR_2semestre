@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "hello_world",
-    "project_version":    "1",
+    "project_version":    "d8c2ba6-dirty",
     "project_path":       "C:/teste/CKP02/hello_world",
     "idf_path":           "C:/Users/clebe/esp/v5.4.2/esp-idf",
     "build_dir":          "C:/teste/CKP02/hello_world/build",
@@ -1195,7 +1195,7 @@
             "managed_reqs": [],
             "managed_priv_reqs": [],
             "file": "C:/teste/CKP02/hello_world/build/esp-idf/main/libmain.a",
-            "sources": [ "C:/teste/CKP02/hello_world/main/hello_world_main.c" ],
+            "sources": [ "C:/teste/CKP02/hello_world/main/GS_2semestre_STR.c" ],
             "include_dirs": []
         },
         "mbedtls": {

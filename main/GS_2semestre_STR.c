@@ -39,7 +39,7 @@ QueueHandle_t logQueue;
 SemaphoreHandle_t secureListMutex;
 
 const char *secureNetworks[MAX_SSIDS] = {
-    "IoT_Secure", "LabNet_Protected", "HomeNet_5G", "OfficeNet", "GuestNet"
+    "Filial_II", "LaboratorioNet", "SedeNet_5G", "AuditorioNet", "VisitanteNet"
 };
 
 // --- Função para verificar se SSID é seguro
@@ -59,11 +59,14 @@ int is_secure_network(const char *ssid) {
 // --- ScannerTask
 void ScannerTask(void *pvParameters) {
     SSID_t ssidData;
-    const char *demoSSIDs[] = {"IoT_Secure", "EvilTwin", "RandomAP", "LabNet_Protected", "Unknown_AP", "HomeNet_5G"};
+    const char *demoSSIDs[] = {"IoT_Secure", "EvilTwin", "RandomAP", "LabNet_Protected", "Unknown_AP", "Filial_II", "LaboratorioNet", "SedeNet_5G", "AuditorioNet", "VisitanteNet"};
     int idx = 0;
-    
+
     while (1) {
-        strncpy(ssidData.ssid, demoSSIDs[idx % 6], sizeof(ssidData.ssid));
+        // para calcular dinamicamente as rede averiguadas - todos os SSIDs do vetor
+        int totalSSIDs = sizeof(demoSSIDs) / sizeof(demoSSIDs[0]);
+        strncpy(ssidData.ssid, demoSSIDs[idx % totalSSIDs], sizeof(ssidData.ssid));
+        //strncpy(ssidData.ssid, demoSSIDs[idx % 6], sizeof(ssidData.ssid)); // idx % 6 → isso limita o índice aos primeiros 6 elementos apenas.
         xQueueSend(ssidQueue, &ssidData, pdMS_TO_TICKS(50));
         idx++;
         vTaskDelay(pdMS_TO_TICKS(500)); // Delay curto para evitar travamento e WDT
@@ -117,8 +120,14 @@ void app_main(void) {
     logQueue = xQueueCreate(LOG_QUEUE_SIZE, sizeof(LogMessage_t));
     secureListMutex = xSemaphoreCreateMutex();
 
-    esp_task_wdt_init(5, true); // Timeout 5s para todas tasks
-    esp_task_wdt_add(NULL);      // Main task
+    // esp_task_wdt_init(5, true); // Timeout 5s para todas tasks
+    esp_task_wdt_config_t twdt_config = {
+        .timeout_ms = 5000,   // 5 segundos
+        .trigger_panic = true // se quiser que dê panic ao expirar
+    };
+    esp_task_wdt_init(&twdt_config);
+// --- Adiciona a task principal (app_main) ao WDT
+    // esp_task_wdt_add(NULL); comentado para que redes autorizadas sejam listadas no alerta.
 
     xTaskCreate(ScannerTask, "ScannerTask", 2048, NULL, 1, NULL);
     xTaskCreate(CheckerTask, "CheckerTask", 4096, NULL, 2, NULL);
