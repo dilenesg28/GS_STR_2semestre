@@ -1,0 +1,2 @@
+source C:/teste/CKP02/hello_world/build/bootloader/gdbinit/symbols
+source C:/teste/CKP02/hello_world/build/bootloader/gdbinit/connect
